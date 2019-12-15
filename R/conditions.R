@@ -6,7 +6,7 @@ mydata <- read.csv('evals.csv')
 
 # if
 
-a <- 
+a <- 10
 
 if (a > 0){
   print('positive')
@@ -73,13 +73,7 @@ for (i in 1:nrow(mydata)){
 
 
 
-
-
 mydata$quality2 <- ifelse(mydata$score > 4, 'good', 'bad')
-
-
-
-
 
 
 

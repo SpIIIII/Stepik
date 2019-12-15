@@ -89,3 +89,6 @@ mydata5 <- mydata[,1:10]
 mydata6 <- mydata[,11:24]
 mydata7 <- cbind(mydata6, mydata5)
 tail(mydata4)
+
+mtcars$new_var <- ifelse(mtcars$carb>6 | mtcars$carb>=4, 1, 0)
+mtcars[c("new_var","carb","ca"),]

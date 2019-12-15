@@ -1,0 +1,51 @@
+?AirPassengers
+str(AirPassengers)
+air_pas <- AirPassengers
+for (i in 2:length(AirPassengers))
+  if (AirPassengers[i-1]<AirPassengers[i])
+    result<-c(result,AirPassengers[i])
+x<-c(1,2,3,4,5,6,7,8,9,10)
+mean(x)
+moving_average = c()
+for (i in 10:length(AirPassengers))
+  moving_average <-c(moving_average,mean(AirPassengers[(i-9):i]))
+moving_average <- sapply(1:135, function(x) print(x))
+
+df <- mtcars
+str(df)
+df$vs <- factor(df$vs, labels = c("V","S"))
+df$am <-factor(df$am , labels = c("Auto","Manual"))
+median(df$mpg)
+mean(df$disp)
+sd(df$hp)
+range(df$cyl)
+mean(df$mpg[df$cyl == 6])
+mean(df$mpg[df$cyl == 6 & df$vs == "V"])
+sd(df$hp[df$cyl != 3 & df$am == "Auto"])
+mean_hp_by_vs <- aggregate(x = df$hp, by = list(df$vs), FUN = mean)
+
+  colnames(mean_hp_by_vs)
+colnames(mean_hp_by_vs) <- c("VS","Mean HP")
+aggregate(hp ~ vs,df, mean)
+aggregate(hp ~ vs + am, df, mean)
+aggregate(x = df$hp, by = list(df$vs,df$am), FUN = mean)
+aggregate( x = df[,-c(8,9)],by = list(df$am), FUN = median)
+aggregate(df[,c(1,3)],by = list(df$am,df$vs), FUN = sd)
+aggregate(cbind(mpg,disp) ~ am + vs, df, sd)
+cbind(df$mpg,df$disp)
+aggregate(cbind(hp,disp)~am,df,sd)
+
+library(psych)
+?describe
+describe(x=df[,-c(8,9)])
+desk = describeBy(x = df[,-c(8,9)],group = df$vs, mat = TRUE,digits = 1)
+desk_f = describeBy(x = df[,-c(8,9)],group = df$vs, mat = TRUE,digits = 1, fast = TRUE)
+describeBy(df$qsec, group = list(df$vs, df$am), mat = TRUE, digits = 1, fast = TRUE)
+sum(is.na(df))
+df$mpg[1:10] <- NA
+mean(df$mpg, na.rm = TRUE)
+aggregate(mpg ~ am, df, sd)
+x <- subset(airquality, Month == c(7,8,9))
+aggregate(Ozone ~ Month, x, length, na.action = na.pass())
+x <- 5
+> x %in% c(3, 4, 5)
