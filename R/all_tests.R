@@ -1,4 +1,6 @@
 setwd('~/Programming/Stepik/R')
+library(ggplot2)
+
 ?AirPassengers
 str(AirPassengers)
 air_pas <- AirPassengers
@@ -83,6 +85,321 @@ ggplot(iris, aes(Sepal.Length)) + geom_histogram(aes(fill = Species),alpha = 0.7
 write.csv(airquality,'airq.csv')
 getwd()
 
+## Analise nominative
+
+df <- read.csv("grants.csv")
+str(df)
+
+df$status <- as.factor(df$status)
+levels(df$status) <- c("Not funded", "Funded")
+df$status <- factor(df$status, labels = c("Not Ffunded", "Funded"))
+ 
+t1 <- table(df$status)
+t1
+dim(t1)
+t2 <- table(df$status, df$field)
+t2
+t2 <- table(status = df$status, field = df$field)
+t2
+
+dim(t2)
+prop.table(t2, 1)
+prop.table(t2, 2)
+t3 <- table(Years = df$years_in_uni, Field = df$field, Status = df$status)
+t3
+dim(t3)
+
+dimnames(HairEyeColor)
+sum(HairEyeColor[,'Blue','Male'])
+prop.table(HairEyeColor[ , ,'Male'],2)
+sum(HairEyeColor[,"Green","Female"])
+
+barplot(t2, legend.text = T, args.legend = list(x = "topright"), beside = T)
+
+mosaicplot(t2)
+ 
+mydata <- as.data.frame(HairEyeColor[,,"Female"])
+library(ggplot2)
+
+mydata$Hair
+obj <- ggplot(mydata, aes(x = Hair, y = Freq)) + 
+  geom_bar(stat="identity", position = position_dodge(),aes(fill = Eye))+
+  scale_fill_manual(values = c("Brown","Blue", "Darkgrey","Dark"))
+
+obj
+
+#   Binomial Test
+
+binom.test(x=5, n=20, p=0.5)
+binom.test(t1)
+
+# Chi-Square
+t1
+chisq.test(t1)
+
+chi<- chisq.test(t1)
+chi$exp
+chi$obs
+
+# Fisher's Exact Test
+fisher.test(t2)
+chisq.test(HairEyeColor["Brown",,"Female"])
+library(ggplot2)
+t1 <- xtabs(~cut+color, data=diamonds)
+t2 <- chisq.test(t1)
+print(t2[1])
+xtabs(~cut+color, data=diamonds)
+diamonds[1:5,'carat']
+diamonds$factor_carat <- (diamonds$carat >= mean(diamonds$carat)) *1
+diamonds$factor_price <- (diamonds$price >= mean(diamonds$price))*1 
+chisq.test(xtabs(~factor_price+factor_carat,diamonds))[1]
+
+
+# 2.1.15
+xt_macars <- xtabs(~am+vs,mtcars)
+
+tbl = table(mtcars$am, mtcars$vs) 
+xt_macars
+tbl
+fisher.test(xt_macars)[1]
+chisq.test(mtcars$am, mtcars$vs)[1]
+
+
+# =========== 2.2 t-test (comparison of two groops)  ==============#
+
+# 2.2.2 - 2.2.9
+?iris
+df <- iris
+str(df)
+
+df1 <- subset(df, Species != 'setosa')
+str(df1)
+table(df1$Species)
+
+hist(df1$Sepal.Length)
+ggplot(df1,aes(x = Sepal.Length))+
+  geom_histogram(fill = "white", col = "black", binwidth = 0.4)+
+  facet_grid(Species ~ .)
+ggplot(df1, aes(Sepal.Length, fill = Species))+
+  geom_density(alpha = 0.5)
+
+ggplot(df1, aes(Species, Sepal.Length))+
+  geom_boxplot()
+
+shapiro.test(df1$Sepal.Length)
+
+shapiro.test(df1$Sepal.Length[df1$Species == "versicolor"])
+shapiro.test(df1$Sepal.Length[df1$Species == "virginica"])
+bartlett.test(Sepal.Length ~ Species, df1)
+
+test1 <- t.test(Sepal.Length ~ Species, df1)
+str(test1)
+test1$p.value
+
+t.test(Sepal.Length ~ Species, df1, var.equal = T)
+t.test(df1$Sepal.Length, my = 8)
+
+t.test(df1$Petal.Length, df1$Petal.Width, paired = T)
+
+
+# 2.2.10
+
+ToothGrowth
+tooth_oj_05 = subset(ToothGrowth, supp == "OJ" & dose == 0.5)
+tooth_vc_2 = subset(ToothGrowth, supp == "VC" & dose == 2)
+length(tooth_oj_05$len)
+tooth_vc_2
+t.test(tooth_oj_05$len, tooth_vc_2$len)[1]
+
+correct_data <- subset(ToothGrowth, supp=='OJ' & dose==0.5 | supp=='VC' & dose==2)
+correct_data
+xtabs(len ~ supp, correct_data)
+
+# 2.2.11
+
+lekarst <- read.csv("lekarstva.csv")
+str(lekarst)
+t.test(lekarst$Pressure_before,lekarst$Pressure_after,paired = T)[1]
+ggplot(lekarst,aes(x=Pressure_before,fill = 'red'))+
+  geom_density()
+
+# 2.2.12-2.2._
+ggplot(df1, aes(Species, Sepal.Length))+
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.1)+
+  stat_summary(fun.y = mean, geom = "point", size = 4)
+
+ggplot(df1, aes(Species, Sepal.Length))+
+  stat_summary(fun.data = mean_cl_normal, geom = "pointrange", size = 1)
+
+test2 <- wilcox.test(Petal.Length ~ Species, df1)  
+test2$p.value
+ggplot(df1,aes(Species, Petal.Length))+
+  geom_boxplot()
+wilcox.test(df1$Petal.Length, df1$Petal.Width, paired =T)
+
+
+# 2.2.15
+dataset <- read.table('dataset_11504_15.txt')
+str(dataset)
+bart_test <- bartlett.test(V1~V2,dataset)
+if (bart_test$p.value >= 0.05){
+  t_test <- t.test(V1~V2,dataset,var.equal = TRUE)
+  print(t_test$p.value)
+  }else{
+    wil_test <-wilcox.test(V1~V2,dataset) 
+  print(wil_test$p.value)}
+
+# 2.2.16
+ds_16 <-read.csv("dataset_11504_16.txt")
+ds_16
+
+
+
+
+# =========== 2.3 analysis of variance ==============#
+
+# 2.3.5 Диспрсионный анализ
+shops_ds <- read.csv('shops.csv')
+boxplot(price~origin,data = shops_ds)
+ggplot(shops_ds,aes(x = origin, y = price))+
+  geom_boxplot()
+fit <- aov(price ~ origin, data = shops_ds)
+summary(fit)
+
+
+# 2.3.6
+fit2 <- aov(price ~ origin + store, shops_ds)
+summary(fit)
+ggplot(shops_ds, aes(x = store, y = price))+
+  geom_boxplot()
+model.tables(fit2,"means")
+describe(shops_ds$price[shops_ds$store == 'supermarket'])
+
+# 2.3.7
+pd = position_dodge(0.1)
+ggplot(shops_ds, aes(x = store, y = price, color = origin, group = origin))+
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2, lwd = 0.8, position = pd)+
+  stat_summary(fun.data = mean_cl_boot, geom = "line", size = 1.5, position = pd)+
+  stat_summary(fun.data = mean_cl_boot, geom = 'point', size= 5, position = pd, pch = 15)+
+  theme_bw()
+fit3 <- aov(price ~ origin + store + origin:store, shops_ds)
+summary(fit3)
+fit4 <- aov(price ~ origin * store, shops_ds)
+summary(fit4)
+
+#2.3.8 - 2.3.9
+p_to_n <- aov(yield~(N+P+K)^2, npk)
+summary(p_to_n)
+
+#2.3.10  
+ggplot(shops_ds, aes(x = food, y= price))+
+  geom_boxplot()
+fit5 <- aov (price ~ food, shops_ds)
+summary(fit5)
+TukeyHSD(fit5)  
+   
+# 2.3.11
+iris_aov <- aov(Sepal.Width ~ Species,iris)
+TukeyHSD(iris_aov)  
+ggplot(iris, aes(x = Species, y = Sepal.Width))+
+  geom_boxplot()
+
+# 2.3.12
+therapy_db <- read.csv("therapy_data.csv")
+therapy_db$subject <- as.factor(therapy_db$subject)
+fit1 <- aov(well_being ~ therapy, therapy_db)
+fit1_er <- aov(well_being ~ therapy + Error(subject/therapy), therapy_db)
+summary(fit1_er)
+
+fit2 <- aov(well_being ~ therapy*price, therapy_db)
+summary(fit2)
+ggplot(therapy_db, aes(x = therapy, y = well_being))+
+  geom_boxplot()
+
+fit2_er <- aov(well_being ~ therapy*price + Error(subject/(therapy*price)),therapy_db)
+summary(fit2_er)
+ggplot(therapy_db, aes(x = price, y = well_being))+
+  geom_boxplot()+
+  facet_grid(~subject)
+
+#  2.3.13
+tabletki <- read.csv("Pillulkin.csv")
+str(tabletki)
+tabletki$patient <- as.factor(tabletki$patient)
+fit <- aov(temperature ~ pill + Error(patient/pill), tabletki)
+summary(fit)
+
+#  2.3.14
+tabletki <- read.csv("Pillulkin.csv")
+str(tabletki)
+tabletki$patient <- as.factor(tabletki$patient)
+fit <- aov(temperature ~ pill*doctor + Error(patient/(pill*doctor)), tabletki)
+summary(fit)
+
+# 2.3.15
+ggplot(ToothGrowth, aes(x = as.factor(dose), y = len, col = supp, group = supp))+
+  stat_summary(fun.data = mean_cl_boot, geom = 'errorbar', width = 0.1, position = position_dodge(0.2))+
+  stat_summary(fun.data = mean_cl_boot, geom = 'point', size = 3, position = position_dodge(0.2))+
+  stat_summary(fun.data = mean_cl_boot, geom = 'line', position = position_dodge(0.2))
+
+
+
+# =========== 2.4 Functions ==============#
+
+# 2.4.3
+my_calc <- function(x,y){
+  s <- x + y 
+  d <- x - y
+  return (c(s,d))
+}
+my_calc(x = 5,10)
+
+# 2.4.4
+distr1 <- rnorm(100)
+distr1[1:30] <- NA
+distr1[is.na(distr1)] <- mean(distr1, na.rm = T)
+distr1
+hist(distr1)
+ my_na_rm <- function(x){
+   x[is.na(x)] <- mean(x, na.rm = T)
+   return(x)
+ }
+
+distr1 <- my_na_rm(distr1)
+source("my_calc_func.R")
+my_calc(1,2)
+
+# 2.4.7 
+d <- rnorm(10)
+d[1:3] <- NA
+which(is.na(d))
+
+# 2.4.8
+d <- rnorm(10)
+d[1:3] <- NA
+sum(is.na(d))
+
+# 2.4.9
+dir(pattern = "*.csv")
+grants <- data.frame()
+for (i in dir(pattern = "*.csv")){
+  temp_df <- read.csv(i)
+  grants <- rbind (temp_df, grants)
+}
+
+read_data <- function(){
+  df <- data.frame()
+  n <- 0 
+  for (i in dir(pattern = "*.csv")){
+    temp_df <- read.csv(i)
+    df <- rbind (temp_df, df)
+    n <- n+1
+  }
+  print(paste(as.character(number),"files were combined"))
+  return (df)
+}
+
+# 2.4.10
 
 
 
