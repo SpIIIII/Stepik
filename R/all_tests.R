@@ -1,5 +1,6 @@
 setwd('~/Programming/Stepik/R')
 library(ggplot2)
+library(psych)
 
 ?AirPassengers
 str(AirPassengers)
@@ -38,7 +39,7 @@ aggregate(cbind(mpg,disp) ~ am + vs, df, sd)
 cbind(df$mpg,df$disp)
 aggregate(cbind(hp,disp)~am,df,sd)
 
-library(psych)
+
 ?describe
 describe(x=df[,-c(8,9)])
 desk = describeBy(x = df[,-c(8,9)],group = df$vs, mat = TRUE,digits = 1)
@@ -399,7 +400,75 @@ read_data <- function(){
   return (df)
 }
 
+
 # 2.4.10
+x <- c(-3, 10, NA, -1, 1, 0, 4, -3, 2, -2, -3, 3, -3, 0)
+sum(x[x>0],na.rm=T)
+
+# 2.4.11
+x <- c(-0.87, 1, -9.77, 0.06, 0.38, -0.12, 0.59, -3.11, 24.56, -0.53, 
+       1.48, 13.03, -41.17, 5.46, 1.98, 102.76, -3.5, 1.38, -0.12, -0.86, 
+       0.61, 1.6, -0.85, 0.88, 0.36, -0.19, 0.22, 1.26, 1.75, -2.83)
+qn = quantile(x, probs = c(0.25, 0.75))
+iq = IQR(x)
+x[ x<qn[2]+1.5*iq & x>qn[1]-1.5*iq]
+
+# example of solve
+q <- quantile(x, 0.25) + quantile(x, 0.75) 
+mean(x) 
+q
+(x[abs(x - q/2) <= 2*IQR(x)])
+
+
+
+# ========== 3.1 Corelation ========== #
+
+#  3.1.2 - 3.1.4
+df <- mtcars
+fit <- cor.test(x = df$mpg, y = df$hp)
+str(fit)
+cor.test(~ mpg + hp, df)
+
+plot(x =df$mpg, y = df$hp)
+ggplot(df, aes(mpg, hp, col = factor(cyl)))+
+  geom_point()
+
+df
+df[,c(1,3:7)]
+df_numeric <- df[,c(1,3:7)]
+pairs(df_numeric)
+cor(df_numeric)
+fit <- corr.test(df_numeric)
+fit$r
+fit$p
+
+# 3.1.5
+x<-iris[,1:2]
+x[,1]
+corr.calc <- function(x){
+  cor <- cor.test(x[,1],x[,2])
+  return(c(cor$estimate,cor$p.value))
+}
+
+# 3.1.6
+test_df <-read.csv('step6.csv')
+str(test_df)
+library(psych)
+filtered.cor <- function(x){
+  fit <- corr.test(dplyr::select_if(x,is.numeric))
+  diag(fit$r) <- 0 
+  max_index <- which.max(abs(fit$r))
+  return (fit$r[max_index])
+}
+filtered.cor(test_df)
+
+# 3.1.7
+
+smart_cor <- function(x){
+  shapiro.test(x)
+}
+
+
 
 
 
