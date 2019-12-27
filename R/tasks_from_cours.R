@@ -632,8 +632,12 @@ beta.coef <- function(x){
 }
 beta.coef(test_data)
 
-
-
+# 3.4.9
+normality.test  <- function(x){
+  answer <- apply(x,2,shapiro.test)
+  return (answer)
+  }
+normality.test(mtcars)
 
 
 
