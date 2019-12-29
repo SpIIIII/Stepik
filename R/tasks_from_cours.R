@@ -1,6 +1,7 @@
 setwd('~/Programming/Stepik/R')
 library(ggplot2)
 library(psych)
+library(gvlma)
 
 ?AirPassengers
 str(AirPassengers)
@@ -634,10 +635,114 @@ beta.coef(test_data)
 
 # 3.4.9
 normality.test  <- function(x){
-  answer <- apply(x,2,shapiro.test)
-  return (answer)
+  answer <- sapply(x,shapiro.test)
+  return (answer['p.value',])
   }
 normality.test(mtcars)
+
+# 3.5.2 - 3.5.4
+ggplot(swiss, aes(Examination_sqr, Education))+
+  geom_point()+
+  geom_smooth()
+
+lm1 <- lm(Education ~ Examination, swiss)
+summary(lm1)
+swiss$Examination_sqr <- (swiss$Examination)^2
+lm2 <- lm(Education ~ Examination + Examination_sqr,swiss)
+summary(lm2)
+anova(lm1,lm2)
+swiss$lm1_fitted <- lm1$fitted
+swiss$lm2_fitted <- lm2$fitted
+swiss$lm1_resid <- lm1$resid
+swiss$lm2_resid <- lm2$resid
+swiss$obs_num <- 1:nrow(swiss)
+ggplot(swiss,aes(x = Examination, y = Education))+
+  geom_point()+
+  geom_line(aes(x = Examination, y = lm1_fitted), col = 'red', lwd = 1)+
+  geom_line(aes(x = Examination, y = lm2_fitted), col = 'blue', lwd=1)
+
+ggplot(swiss, aes(x = lm1_fitted, y = lm1_resid))+
+  geom_point()+ 
+  geom_hline(yintercept =  0, col = 'red', lwd =1)
+
+ggplot(swiss, aes(x = lm2_fitted, y = lm2_resid))+
+  geom_point()+ 
+  geom_hline(yintercept =  0, col = 'red', lwd =1)
+
+ggplot(swiss, aes(x = obs_num, y = lm1_resid))+
+  geom_point()+ geom_smooth()
+ggplot(swiss, aes(x = obs_num, y = lm2_resid))+
+  geom_point()+ geom_smooth()
+    # homoscedasticity
+
+#  3.5.5
+ggplot(swiss, aes(x = lm2_fitted, y = lm2_resid))+
+  geom_point()+ geom_smooth()
+x <- read.csv('homosc.csv')
+fit <- lm(DV ~ IV, x)
+summary(gvlma(fit))
+
+# 3.5.6
+ggplot(swiss, aes(x = lm1_resid))+
+  geom_histogram(binwidth = 2, fill = 'white', col = 'black')
+qqnorm(lm1$residuals)
+qqline(lm1$residuals)
+shapiro.test(lm1$residuals)
+par(mfrow=c(2,2)) 
+plot(fit)
+
+# 3.5.7
+resid.norm  <- function(fit){
+  x <- fit$residuals
+  is_norm <- shapiro.test(x)$p.value
+  if (is_norm > 0.05){
+    res <- ggplot(data.frame(x), aes(x = x))+
+      geom_histogram(fill = 'green')
+  }else{
+    res <- ggplot(data.frame(x), aes(x = x))+
+      geom_histogram(fill = 'red')
+  }
+  return (res)
+}
+fit <- lm(wt~mpg,mtcars)
+resid.norm(fit)
+
+# 3.5.8
+x1 <- rnorm(30) # создадим случайную выборку
+x2 <- rnorm(30) # создадим случайную выборку
+x3  <- x1 + 5 # теперь коэффициент корреляции x1 и x3 равен единице
+my_df <- data.frame(var1 = x1, var2 = x2, var3 = x3)
+high.corr <- function(x){
+  cor_ <- abs(round(cor(x),digits = 3))
+  y <- which(cor_ == 1,arr.ind = T)
+  return (rownames(y))
+}
+high.corr(my_df)
+
+cor_ <- abs(round(cor(my_df),digits = 3))
+y <- which(cor_ == 1,arr.ind = T)
+y
+
+# 3.6.3 - 3.6.4
+my_df <- read.csv('train.csv', sep = ';')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
