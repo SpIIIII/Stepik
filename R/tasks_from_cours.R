@@ -788,9 +788,21 @@ data_na$admit <- predict(fit,data_na[,c(2,3,4)],type = 'response')
 nrow(data_na[data_na$admit > 0.4,])
 
 # 3.7.2
+install.packages('xtable')
+install.packages('stargazer')
 
+library(xtable)
+library(stargazer)
+fit1 <- lm(mpg ~ cyl + disp, mtcars)
+fit2 <- aov(mpg ~ am * vs,mtcars)
+summary(fit1)
 
+fit_table1 <- xtable(fit1)
+fit_table2 <- xtable(fit2)
 
+print(fit_table1, type='html', file = 'fit_table1.html')
+print(fit_table2, type = 'html', file = 'fit_table2.html')
 
-
+stargazer(fit1, type = 'html', dep.var.labels = 'mpg', 
+          covariate.labels = c('cyl','disp'),out = 'models1.html')
 
