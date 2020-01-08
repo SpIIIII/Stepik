@@ -35,16 +35,20 @@ se_data <- summarise(gb_f,mean_e = mean(expr),
 
 
 ggplot(se_data, aes(factor(Therapy), mean_e))+
-         geom_errorbar(aes(ymin = y_min, ymax = y_max),width=0.2, lwd=1)
+         geom_errorbar(aes(ymin = y_min, ymax = y_max),width=0.2, lwd=1)+
+          geom_point(shape=21, size=3, fill='white')
 
 
 
+# 2.6.2 ~
+data <- read.csv('atherosclerosis.csv')
+str(data)
+data$age <- factor(data$age)
+str(data)
+fit <- aov(expr~age*dose,data)
+summary(fit)
 
-
-
-
-
-
-
-
-
+data_birds <- read.csv('birds.csv')
+str(data_birds)
+fit <- aov(var4 ~ hormone*sex,data_birds)
+summary(fit)
