@@ -2,7 +2,6 @@ setwd('~/Programming/Stepik/basics statistics')
 
 library(ggplot2)
 library(dplyr)
-qt(c(.025, .975), df=5)
 
 t.test.fromSummaryStats <- function(mu,n,s) {
   -diff(mu) / sqrt( sum( s^2/n ) )
@@ -52,3 +51,11 @@ data_birds <- read.csv('birds.csv')
 str(data_birds)
 fit <- aov(var4 ~ hormone*sex,data_birds)
 summary(fit)
+
+# 3.1.-1
+a = c(4,5,2,3,1)
+b = c(2,1,4,3,5)
+my_df <- data.frame(a,b)
+cor.test(a,b)
+ggplot(my_df,aes(a,b))+
+  geom_point()
