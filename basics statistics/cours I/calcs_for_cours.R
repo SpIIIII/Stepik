@@ -1,4 +1,4 @@
-setwd('~/Programming/Stepik/basics statistics')
+setwd('~/Programming/Stepik/basics statistics/cours I')
 
 library(ggplot2)
 library(dplyr)
