@@ -59,3 +59,33 @@ my_df <- data.frame(a,b)
 cor.test(a,b)
 ggplot(my_df,aes(a,b))+
   geom_point()
+
+# 3.6.2
+states <- read.csv('states.csv')
+cor.test(states$poverty, states$hs_grad)
+fig = lm(poverty~hs_grad,states)
+summary(fig)
+str(fig$residuals)
+fig$residuals[1:51]
+sub_df <- data.frame(states$hs_grad, fig$residuals)
+colnames(sub_df) <- c('hs_grad','residulas')
+
+sub_df
+ggplot(sub_df, aes(hs_grad, residulas))+
+  geom_point(size = 2)+
+  geom_hline(yintercept = 0)
+
+ggplot(sub_df, aes(sample = residulas))+
+  geom_qq()+
+  geom_qq_line()
+
+ggplot(states, aes(poverty, hs_grad))+
+  geom_point( )+
+  geom_smooth(mehtod ='lm')
+ggplot(states, aes(sample=poverty))+
+  stat_qq()
+str(states)
+
+fit <- lm(poverty ~ hs_grad+metro_res+white+hs_grad+female_house, states)
+summary(fit)
+fit$residuals
