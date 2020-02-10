@@ -9,7 +9,10 @@ df = data.frame(c(6,0),c(3,3))
 chisq.test(df)
 df = data.frame(c(20,15),c(11,12))
 chisq.test(df)
-                
+           
+
+
+     
 # 1.9
 c1 <- c(NaN, NaN, 9, 5, NaN, 2, NaN, NaN)
 c2 <-c(1, 7, NaN, 8, NaN, NaN, NaN, 6)
@@ -37,21 +40,102 @@ smart_test <-  function(x){
 }
 
 
+
+# ========
 test_data <- read.csv("https://stepic.org/media/attachments/course/524/test_data.csv", stringsAsFactors = F)
 
-tables <- apply(test_data, 2, table)
-squeres <- apply(tables, 2, chisq.test)
-squeres$p.value
-lmap(squeres, )
-
-most_significant <-  function(x){
+most_significant_my <-  function(x){
   chisquered <- sapply(x,  function(x){
     t = table(x)
     ch = chisq.test(t)
     return (ch$p.value)
   } )
-  return (min(chisquered))
+  names <- rownames(as.matrix(chisquered))
+  ret <- names[which(chisquered==min(chisquered))]
+  return (ret)
 }
+most_significant  <- function(test_data){    
+  chisq_tests <- sapply(test_data, function(col) chisq.test(table(col))$p.value)    
+  min_p  <- which(chisq_tests == min(chisq_tests))    
+  return(colnames(test_data)[min_p])
+}
+
+
+
+
+# ========
+means <- colMeans(iris[,1:4])
+ir <- iris[,1:4]
+iris$important_cases <- ifelse((ir[1]>means[1]) + (ir[2]>means[2]) + (ir[3]>means[3]) + (ir[4]>means[4]) >=3, 'yes', 'no')
+
+str(as.factor(iris$important_cases))
+
+importance_calc <- function(v1, v2, threshold=3){    
+  ifelse(sum(v1 > v2) >= threshold, 'Yes', 'No')}    
+iris$important_cases <- factor(apply(iris[1:4], 1, importance_calc, v2 = colMeans(iris[, 1:4])))
+
+
+
+# ========
+test_data <- data.frame(V1 = c(16, 21, 18), 
+                          V2 = c(17, 7, 16), 
+                          V3 = c(25, 23, 27), 
+                          V4 = c(20, 22, 18), 
+                          V5 = c(16, 17, 19))
+get_important_cases_my <- function(x){
+  means <- colMeans(test_data)
+  bigger <- rowSums(t(t(test_data)>means))
+  x$important_cases <- as.factor(ifelse(bigger> ncol(test_data)/2, "Yes", "No"))
+  levels(x$important_cases) <- c("Yes", "No")
+  return (x)
+}
+
+get_important_cases <- function(x){
+  x$important_cases <- factor(colSums(t(x) > colMeans(x)) > ncol(x)/2, c(F,T), c("No","Yes"))
+  x
+}
+
+get_important_cases(test_data)
+
+
+
+# ========
+v <- c(9,19,11,18,18,10,16,19,19,3,11,18,1)
+stat_mode <- function(x){
+  y <- table(x)
+  z <- y[which(y == max(y))]
+  return (as.numeric(colnames(t(z))))
+}
+
+y <- table(v)
+
+
+
+
+#================
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/test_drugs.csv")
+max_resid <- function(x){
+  resud <- chisq.test(table(x))$stdres
+  rows_ <- rownames(resud)
+  columns_ <- colnames(resud)
+  indx <- which(resud==max(resud), arr.ind=T)
+  return (c(rows_[indx[1]], columns_[indx[2]]))
+}
+
+
+
+#================
+library(ggplot2)
+
+ggplot(diamonds, aes(x=color, fill=cut))+
+  geom_bar(position = 'dodge')
+
+
+
+
+
+
+
 
 
 
