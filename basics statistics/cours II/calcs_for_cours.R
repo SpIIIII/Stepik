@@ -131,8 +131,52 @@ ggplot(diamonds, aes(x=color, fill=cut))+
   geom_bar(position = 'dodge')
 
 
+#================
+# 2.8.2
+test_data <- read.csv("https://stepik.org/media/attachments/course/524/test_data_01.csv")
+test_data2 <- as.data.frame(list(x = c(2, 2, 2, 2, 1, 1, 2, 1, 2, 2, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2, 1, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2), y = c(1, 2, 1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 2)))
 
 
+get_coefficients <- function(dataset){
+  data <- transform(dataset, x=as.factor(x), y=as.factor(y))
+  print(str(data))
+  fit <- glm(y~x, data, family = 'binomial')
+  coef <- summary(fit)$coefficients
+  print(coef)
+  exp(coef[,'Estimate'])
+}
+get_coefficients(test_data2)
+
+
+#================
+# 2.8.3
+
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/cen_data.csv")
+var_names = c("X4", "X2", "X1")
+test_data[,'X4'] - mean(test_data[,'X4'])
+centered <- function(test_data, var_names){
+  test_data[var_names] <- sapply(test_data[var_names], function(x) x-mean(x))
+}
+
+centered(test_data,var_names)
+
+
+#================
+# 2.8.4
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/test_luggage_1.csv")
+str(test_data)
+
+get_features <- function(dataset){
+  fit <- glm(is_prohibited ~ weight+ length+ width+ type, dataset, family='binomial')
+  coef <- summary(fit)$coefficients
+  whi <- which(coef[,'Pr(>|z|)']<0.05)
+  ret <- colnames(dataset)[whi]
+  if (length(ret) == 0){
+    return ('Prediction makes no sense')
+  }
+  return (ret)
+}
+get_features(test_data)
 
 
 
