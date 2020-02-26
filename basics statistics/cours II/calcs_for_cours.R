@@ -168,21 +168,22 @@ str(test_data)
 
 get_features <- function(dataset){
   fit <- glm(is_prohibited ~ weight+ length+ width+ type, dataset, family='binomial')
-  coef <- summary(fit)$coefficients
-  whi <- which(coef[,'Pr(>|z|)']<0.05)
-  ret <- colnames(dataset)[whi]
-  if (length(ret) == 0){
+  an <- anova(fit)
+  rownames(an)[an[2]>0.05]
+  if (length(ret) >= 1){
     return ('Prediction makes no sense')
   }
   return (ret)
 }
 get_features(test_data)
+fit <- glm(is_prohibited ~ weight+ length+ width+ type, test_data, family='binomial')
+an <- anova(fit)
+
+rownames(an)[an[2]>0.05][]
 
 
-
-
-
-
+an <- anova(fit)
+rownames(an)[an[2]>0.05]
 
 
 
