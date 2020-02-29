@@ -163,27 +163,34 @@ centered(test_data,var_names)
 
 #================
 # 2.8.4
+library(plyr)
 test_data <- read.csv("https://stepic.org/media/attachments/course/524/test_luggage_1.csv")
 str(test_data)
 
 get_features <- function(dataset){
   fit <- glm(is_prohibited ~ weight+ length+ width+ type, dataset, family='binomial')
-  an <- anova(fit)
-  rownames(an)[an[2]>0.05]
-  if (length(ret) >= 1){
+  an <- anova(fit,test = "Chisq")
+  r <- rownames(an)[an$`Pr(>Chi)`<0.05]
+  r <- r[!is.na(r)]
+  if (length(r) == 0 ){
     return ('Prediction makes no sense')
   }
-  return (ret)
+  return (r)
 }
 get_features(test_data)
-fit <- glm(is_prohibited ~ weight+ length+ width+ type, test_data, family='binomial')
-an <- anova(fit)
-
-rownames(an)[an[2]>0.05][]
 
 
-an <- anova(fit)
-rownames(an)[an[2]>0.05]
+test_data_1 <- data.frame(is_prohibited = factor( rep(1:2, each = 15)),weight = c( 94,91,72,79,66,88,73,80,83,84,83,78,79,76,82,79,83,97,78,72,82,68,78,85,88,79,85,89,83,78,94,91,72,79,66,88,73,80,83,84,83,78,79,76,82,79,83,97,78,72,82,68,78,85,88,79,85,89,83,78 ),
+                              length = c( 48,47,40,51,42,46,48,56,52,42,60,49,52,55,47,46,50,47,46,54,53,61,61,59,57,47,57,47,49,53,48,47,40,51,42,46,48,56,52,42,60,49,52,55,47,46,50,47,46,54,53,61,61,59,57,47,57,47,49,53 ),
+                              width = c( 24,19,20,21,26,20,20,20,18,16,24,20,20,23,19,18,21,22,19,20,22,20,18,22,20,19,22,22,19,21,24,19,20,21,26,20,20,20,18,16,24,20,20,23,19,18,21,22,19,20,22,20,18,22,20,19,22,22,19,21 ),
+                              type = factor(c( 1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2 )))
+
+fit <- glm(is_prohibited ~ weight+ length+ width+ type, test_data_1, family='binomial')
+an <- anova(fit,test = "Chisq")
+
+r <- rownames(an)[an$`Pr(>Chi)`<0.05]
+r[!is.na(r)]
+
 
 
 
