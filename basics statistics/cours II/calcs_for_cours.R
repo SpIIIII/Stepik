@@ -220,43 +220,45 @@ normality_test(test)
 
 library(dplyr)
 library(reshape2)
-test_data <- read.csv("https://stepic.org/media/attachments/course/524/s_anova_test.csv")
-
+test_data2 <- read.csv("https://stepic.org/media/attachments/course/524/s_anova_test.csv")
+test_data <- as.data.frame(list(x = c(-0.54, 0.83, 0.28, -0.63, 0.25, 0.45, 0.19, -0.31, 2.83, -0.19, -0.18, -0.84, -0.22, -0.87, 0.31, 0.26, -0.66, 0.3, -1.1, -1.35, 0.1, 1.02, 2.12, 0.01, -0.08, 1.76, -0.84, 0.19, -0.11, 0.04), y = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3)))
+test_data$y <-  factor(test_data$y, labels = c('A', 'B', 'C'))
 smart_anova <- function(test_data){
   A = test_data[test_data$y=='A',]
   B = test_data[test_data$y=='B',]
   C = test_data[test_data$y=='C',]
   colnames(A) <- 'A'
-  A <- A[,'x', drop=T]
+  A <- A[,'A', drop=T]
   colnames(B) <- 'B'
-  B <- B[,'x', drop=T]
+  B <- B[,'B', drop=T]
   colnames(C) <- 'C'
-  C <- C[,'x', drop=T]
-  
+  C <- C[,'C', drop=T]
   DF = data.frame(A,B,C)
   shtest <- sapply(DF, function(x) shapiro.test(x)$p.value)
-  bartest <- bartlett.test(x~y, test_data)
-  if (any(shtest<0.05) & bartest<0.05 ){
-    a <- aov(x~y,test_data)
-    return (a)
-  }else{
-    k <- kruskal.test(x~y,test_data)
+  bartest <- bartlett.test(x~y, test_data)$p.value
+  if (any(shtest<0.05) || bartest<0.05 ){
+    k <- kruskal.test(x~y,test_data)$p.value
+    names(k) <- "KW"
     return (k)
+  }else{
+    a <- aov(x~y,test_data)
+    res <- summary(a)[[1]]$'Pr(>F)'[1]
+    names(res) <- 'ANOVA'
+    return (res)
   }
 }
 
-smart_anova(test_data)
+x <- smart_anova(test_data)
+y <- smart_anova(test_data2)
 
 
 
-
-
-
-
-
-
-
-
+#================
+# 2.8.8
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/test_for_norm.csv")
+normality_by <- function(test){
+  return (aggregate(x~y+z, test_data, function(x){shapiro.test(x)$p.value}))
+}
 
 
 
