@@ -257,35 +257,24 @@ y <- smart_anova(test_data2)
 # 2.8.8
 test_data <- read.csv("https://stepic.org/media/attachments/course/524/test_for_norm.csv")
 normality_by <- function(test){
-  return (aggregate(x~y+z, test_data, function(x){shapiro.test(x)$p.value}))
+  x <-  aggregate(x~y+z, test, function(x){shapiro.test(x)$p.value})
+  row2 <- x[2,]
+  x[2,] <- x[3,]
+  x[3,] <- row2
+   colnames(x)[3] <- 'p_value'
+  return(x)
 }
+x = normality_by(test_data)
+x
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#================
+# 2.8.9
+library(ggplot2)
+test_data <- iris
+ggplot(iris, aes(Sepal.Length,fill=factor(Species), alpha=0.5))+
+  geom_density( )
 
 
 
