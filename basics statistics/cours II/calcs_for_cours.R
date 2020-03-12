@@ -1,4 +1,5 @@
 setwd('~/Programming/Stepik/basics statistics/cours II')
+library(ggplot2)
 
 df = data.frame(c(10,6),c(5,15))
 df
@@ -278,32 +279,43 @@ ggplot(iris, aes(Sepal.Length,fill=factor(Species), alpha=0.5))+
 
 
 
+#================
+# 3.6.1
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/test_data_hclust.csv")
+str(test_data)
+
+smart_hclust<-  function(test_data, cluster_number){
+  dist_matrix <- dist(test_data) # расчет матрицы расстояний
+  fit <- hclust(dist_matrix) # иерархическая кластеризация 
+  cluster <- cutree(fit, cluster_number)
+  test_data$cluster <- as.factor(cluster)
+  return (test_data)
+}
+smart_hclust(test_data, 3)
 
 
 
+#================
+# 3.6.2
+install.packages('reshape')
+library('reshape')
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/cluster_1.csv")
+test_data <- as.data.frame(list(X1 = c(6, 13, 11, 22, 18, 21, 32, 30, 29, 39, 38, 35), X2 = c(12, 14, 11, 20, 24, 18, 32, 32, 28, 38, 37, 42), X3 = c(10, 8, 10, 20, 19, 19, 32, 31, 31, 39, 44, 40)))
 
+ggplot(test_data, aes(V1, V2))+
+   geom_point()
+ 
+get_difference<-  function(test_data, n_cluster){
+  dist_m <- dist(test_data)
+  hc <- hclust(dist_m)
+  clusters <- as.factor(cutree(hc, n_cluster))
+  test_data$cluster <- clusters
+  x <- sapply(test_data, function(x){anova(aov(x ~ clusters))$P[1]})
+  x <- ifelse(x <0.05,T,F)
+  return (names(test_data[x]))
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+new_data <- get_difference(test_data,4)
 
 
 
