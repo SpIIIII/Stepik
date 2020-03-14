@@ -319,25 +319,78 @@ new_data <- get_difference(test_data,4)
 
 
 
+#================
+# 3.6.3
+
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/pca_test.csv")
+test_data
+
+get_pc <- function(d){
+  prs <- prcomp(d)
+  d$PC1 <- prs$x[,1]
+  d$PC2 <- prs$x[,2]
+  return (d)
+}
 
 
 
 
+#================
+# 3.6.4
+
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/pca_test.csv")
+
+get_pca2 <- function(data){
+  pcs <-prcomp(test_data)
+  x <- summary(pcs)$importance[3,]
+  l <- length(x[x<0.9])
+  nam <-names(x[0:l+1])
+  extension <- pcs$x[,c(nam)]
+  cbind(data, extension)
+}
+get_pca2(test_data)
 
 
 
+#================
+# 3.6.4
+library(psych)
+test_data <- read.csv("https://stepic.org/media/attachments/course/524/Norris_1.csv")
+test_data2 <- read.csv("https://stepic.org/media/attachments/course/524/Norris_2.csv")
+test_data3 <- as.data.frame(list(V1 = c(5, 13, 22, 8, 10), V2 = c(-1, -9, -18, -4, -6), V3 = c(4, 14, 10, 5, 25), V4 = c(11, 19, 21, -3, 17), V5 = c(-7, 8, 6, -1, 14), V6 = c(17, 25, 27, 3, 23)))
+
+test_data
+test_data2
+test_data3
+
+is_multicol <- function(d){
+  x <- cor(test_data3)
+  diag(x) <- 0
+  x <-abs(round(x, digits = 5))
+  x <- (x==1)
+  x <- rowSums(x, dims=1)
+  x <- x == 1
+  y <- names(x)[x]
+  if (length(y) == 0){
+    return('There is no collinearity in the data')
+  }
+  return (y)
+}
+
+is_multicol(test_data2)
 
 
 
-
-
-
-
-
-
-
-
-
-
+#================
+# 3.6.5
+swiss
+x <- hclust(dist(swiss))
+clust <- as.factor(cutree(x,2))
+swiss$cluster <- clust
+swiss
+library(ggplot2)
+ggplot(swiss, aes(Education, Catholic, color=cluster))+
+  geom_point()+
+  geom_smooth()
 
 
