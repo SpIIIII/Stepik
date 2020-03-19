@@ -393,4 +393,3 @@ ggplot(swiss, aes(Education, Catholic, color=cluster))+
   geom_point()+
   geom_smooth()
 
-
