@@ -100,14 +100,37 @@ smart_model(df)
 
 
 
+#================
+# 1.8.5
+
+test_data <- as.data.frame(list(y = c(10.39, 10.24, 8.55, 9.08, 10.06, 10.55, 9.28, 10.97, 9.51, 10.22, 9.35, 10.12, 9.4, 9.4, 11.84, 9.27, 11.26, 13.35, 9.73, 10.62), 
+                                x = c(16206.71, 13979.3, 2573.64, 4397.03, 11730.07, 19096.25, 5365.96, 29040.95, 6752.77, 13784.18, 5724.28, 12475.26, 6059.7, 6016.84, 69398.34, 5328.67, 38797.28, 315407.38, 8411.47, 20531.1)))
+plot(test_data)
+
+transform_x <-  function(test_data){
+
+  origin_y <- test_data$x
+  powers <- seq(-2,2,0.1)
+  res0 <- NULL
+  res1 <- NULL
+  for (i in powers){
+    if(i==0){
+      test_data$x <- log(origin_y)
+    }else if(i < 0){
+      test_data$x <- -(origin_y**i)
+    }else{
+      test_data$x <- origin_y**i
+    }
+    plot(test_data)
+    res0 <- c(res0, summary(lm(test_data))$r.squared)
+    res1 <- c(res1, list(test_data$x))
 
 
+  }
+  n <- which.max(res0)
+  return (res1[[n]])
+}
 
-
-
-
-
-
-
-
-
+x  <- transform_x(test_data)
+x
+which.max(x)
