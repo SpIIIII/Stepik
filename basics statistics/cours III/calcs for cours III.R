@@ -124,13 +124,65 @@ transform_x <-  function(test_data){
     plot(test_data)
     res0 <- c(res0, summary(lm(test_data))$r.squared)
     res1 <- c(res1, list(test_data$x))
-
-
   }
   n <- which.max(res0)
   return (res1[[n]])
 }
 
-x  <- transform_x(test_data)
-x
-which.max(x)
+
+#================
+# 2.5.2
+
+exp_data <- read.csv("https://raw.githubusercontent.com/opetchey/BIO144/master/3_datasets/politeness_data.csv")
+exp_data
+library(ggplot2)
+ggplot(exp_data, aes(factor(scenario), frequency, fill = attitude))+
+  geom_boxplot()
+
+
+
+#================
+# 2.5.3
+
+exp_data <- read.csv("https://raw.githubusercontent.com/opetchey/BIO144/master/3_datasets/politeness_data.csv")
+exp_data
+library(ggplot2)
+ggplot(exp_data, aes(frequency, fill = subject))+
+  geom_density(alpha=0.2,na.rm=T)+
+  facet_grid(rows~ vars(gender))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
